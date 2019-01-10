@@ -24,7 +24,7 @@ import socketserver
 #
 # run: python freetests.py
 
-# try: curl -v -X GET http://127.0.0.1:8080/
+# try: curl -v -X GET http://127.0.0.1:8080/ 
 
 
 class MyWebServer(socketserver.BaseRequestHandler):
