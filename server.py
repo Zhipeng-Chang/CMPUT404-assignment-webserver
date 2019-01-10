@@ -33,7 +33,15 @@ class MyWebServer(socketserver.BaseRequestHandler):
         self.data = self.request.recv(1024).strip()
         print ("Got a request of: %s\n" % self.data)
         self.request.sendall(bytearray("OK",'utf-8'))
-
+        try:
+            # Rference: https://stackoverflow.com/questions/172439/how-do-i-split-a-multi-line-string-into-multiple-lines
+            # answered by UnkwnTech Oct 5 '08 at 18:50, edited by Demis Apr 28 '16 at 21:55
+            request_method = self.data.splitlines()[0].decode().split(" / ")[0]
+            print ("Request method: %s\n" % request_method)
+        except Exception as e:
+            print ("error: %s\n" % e)
+            pass
+        
 if __name__ == "__main__":
     HOST, PORT = "localhost", 8080
 
