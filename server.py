@@ -48,7 +48,7 @@ class MyWebServer(socketserver.BaseRequestHandler):
         if request_method == 'GET':
             print("Get method")
         else:
-            print("405 Method Not Allowed")
+            self.request.sendall("405 Method Not Allowed \r\n")
 
 
 
