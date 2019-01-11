@@ -7,3 +7,4 @@ python:
 # command to run tests
 script:
   - python3 server.py
+  - curl -v -X GET http://127.0.0.1:8080/ 
