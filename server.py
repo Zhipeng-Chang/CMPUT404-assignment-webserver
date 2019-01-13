@@ -38,6 +38,10 @@ import os
 # Reference: https://eclass.srv.ualberta.ca/pluginfile.php/4549769/mod_resource/content/2/04-HTTP.pdf
 # by Abram Hindle
 
+# https://stackoverflow.com/questions/9823936/python-how-do-i-know-what-type-of-exception-occurred
+
+# https://stackoverflow.com/questions/2104080/how-to-check-file-size-in-python?rq=1
+
 class MyWebServer(socketserver.BaseRequestHandler):
     
     def handle(self):
@@ -54,43 +58,48 @@ class MyWebServer(socketserver.BaseRequestHandler):
         
         if request_method == 'GET':
             file_path = self.data.splitlines()[0].decode().split(" ")[1]
-            if file_path == "/":
-                file_path = "/index.html"
+            print("file_path: %s\n"%file_path)
 
-            valid_path, html_file = self.valid_path(file_path)
+            valid_path, file, path = self.valid_path(file_path)
 
             if valid_path:
-                file_type = file_path.split(".")[1]
-                self.request.sendall(bytearray("HTTP/1.1 200 OK\r\n",'utf-8'))
+                file_type = path.split(".")[1]
+                print("file_type: %s\n"%file_type)
+                print("path: %s\n"%path)
+                print("Content-Length: %s\r\n"% str(os.path.getsize(path)))
+                self.request.sendall(bytearray("HTTP/1.1 200 OK\n",'utf-8'))
                 self.request.sendall(bytearray("Content-Type: text/%s\r\n"% file_type,'utf-8'))
-                self.request.sendall(bytearray("Content-Length: %s\r\n"% len(html_file),'utf-8'))
+                self.request.sendall(bytearray("Content-Length: %s\r\n;"% str(os.path.getsize(path)),'utf-8'))
                 self.request.sendall(bytearray("Connection: keep-alive\r\n",'utf-8'))
-                self.request.sendall(bytearray(html_file,'utf-8'))
-
+                self.request.sendall(bytearray(file,'utf-8'))
+                return
+                
             elif not valid_path:
                 self.request.sendall(bytearray("HTTP/1.1 404 Not Found!\r\n",'utf-8'))
                 self.request.sendall(bytearray("Content-Type: text/html\r\n",'utf-8'))
-                self.request.sendall(bytearray("Content-Length: %s\r\n"% len(html_file),'utf-8'))
+                self.request.sendall(bytearray("Content-Length: %s\r\n;"% str(os.path.getsize(path)),'utf-8'))
                 self.request.sendall(bytearray("Connection: closed\r\n",'utf-8'))
-                self.request.sendall(bytearray(html_file,'utf-8'))
-
+                self.request.sendall(bytearray(file,'utf-8'))
+                return
         else:
-            html_file = open("www/405_error.html").read()
+            file = open("www/405_error.html").read()
             self.request.sendall(bytearray("HTTP/1.1 405 Method Not Allowed\r\n",'utf-8'))
             self.request.sendall(bytearray("Content-Type: text/html\r\n",'utf-8'))
-            self.request.sendall(bytearray("Content-Length: %s\r\n"% len(html_file),'utf-8'))
+            self.request.sendall(bytearray("Content-Length: %s\r\n"% str(os.path.getsize("www/405_error.html")),'utf-8'))
             self.request.sendall(bytearray("Connection: closed\r\n",'utf-8'))                
-            self.request.sendall(bytearray(html_file,'utf-8'))
+            self.request.sendall(bytearray(file,'utf-8'))
+            return
 
     def valid_path(self, file_path):
         try:
-            html_file = open("www"+file_path).read()
-            return True, html_file
+            path = "www"+file_path
+            file = open(path).read()
+            return True, file, path
 
-        except FileNotFoundError:
-            html_file = open("www/404_error.html").read()
-            return False, html_file
-
+        except FileNotFoundError as ex:
+            path = "www/404_error.html"
+            file = open(path).read()
+            return False, file, path
 
 
 if __name__ == "__main__":
