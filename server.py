@@ -40,7 +40,9 @@ import os
 
 # https://stackoverflow.com/questions/9823936/python-how-do-i-know-what-type-of-exception-occurred
 
-# https://stackoverflow.com/questions/2104080/how-to-check-file-size-in-python?rq=1
+# Reference: https://stackoverflow.com/questions/2104080/how-to-check-file-size-in-python?rq=1
+# answered by danben Jan 20 '10 at 18:59, edited by coldspeed Mar 30 '18 at 2:03
+
 
 class MyWebServer(socketserver.BaseRequestHandler):
     
@@ -96,11 +98,16 @@ class MyWebServer(socketserver.BaseRequestHandler):
             file = open(path).read()
             return True, file, path
 
-        except FileNotFoundError as ex:
-            path = "www/404_error.html"
-            file = open(path).read()
-            return False, file, path
-
+        except Exception as ex:
+            exception_type = type(ex).__name__
+            if exception_type == "FileNotFoundError":
+                path = "www/404_error.html"
+                file = open(path).read()
+                return False, file, path
+            elif exception_type == "IsADirectoryError":
+                path = "www"+file_path+"index.html"
+                file = open(path).read()
+                return True, file, path
 
 if __name__ == "__main__":
     HOST, PORT = "localhost", 8080
