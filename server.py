@@ -99,7 +99,6 @@ class MyWebServer(socketserver.BaseRequestHandler):
 
         except Exception as ex:
             exception_type = type(ex).__name__
-            print(exception_type)
 
             if exception_type == "IsADirectoryError":
                 path = "www"+file_path+"/index.html"
