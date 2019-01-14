@@ -39,7 +39,8 @@ from mimetypes import MimeTypes
 # Reference: https://eclass.srv.ualberta.ca/pluginfile.php/4549769/mod_resource/content/2/04-HTTP.pdf
 # by Abram Hindle
 
-# https://stackoverflow.com/questions/9823936/python-how-do-i-know-what-type-of-exception-occurred
+# Reference: https://stackoverflow.com/questions/9823936/python-how-do-i-know-what-type-of-exception-occurred
+# answered by Lauritz V. Thaulow Mar 22 '12 at 14:14, edited by Community♦ May 23 '17 at 12:34
 
 # Reference: https://stackoverflow.com/questions/2104080/how-to-check-file-size-in-python?rq=1
 # answered by danben Jan 20 '10 at 18:59, edited by coldspeed Mar 30 '18 at 2:03
