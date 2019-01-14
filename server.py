@@ -68,27 +68,26 @@ class MyWebServer(socketserver.BaseRequestHandler):
                 file_type = path.split(".")[1]
                 print("file_type: %s\n"%file_type)
                 print("path: %s\n"%path)
-                print("Content-Length: %s\r\n"% str(os.path.getsize(path)))
                 self.request.sendall(bytearray("HTTP/1.1 200 OK\n",'utf-8'))
                 self.request.sendall(bytearray("Content-Type: text/%s\r\n"% file_type,'utf-8'))
-                self.request.sendall(bytearray("Content-Length: %s;"% str(os.path.getsize(path)),'utf-8'))
-                self.request.sendall(bytearray("Connection: keep-alive\r\n",'utf-8'))
+                self.request.sendall(bytearray("Content-Length: %s\r\n;"% str(os.path.getsize(path)),'utf-8'))
+                self.request.sendall(bytearray("Connection: keep-alive\r\n\r\n",'utf-8'))                
                 self.request.sendall(bytearray(file,'utf-8'))
                 return
                 
             elif not valid_path:
                 self.request.sendall(bytearray("HTTP/1.1 404 Not Found!\r\n",'utf-8'))
                 self.request.sendall(bytearray("Content-Type: text/html;\r\n",'utf-8'))
-                self.request.sendall(bytearray("Content-Length: %s;"% str(os.path.getsize(path)),'utf-8'))
-                self.request.sendall(bytearray("Connection: closed\r\n",'utf-8'))
+                self.request.sendall(bytearray("Content-Length: %s\r\n;"% str(os.path.getsize(path)),'utf-8'))
+                self.request.sendall(bytearray("Connection: closed\r\n\r\n",'utf-8'))
                 self.request.sendall(bytearray(file,'utf-8'))
                 return
         else:
             file = open("www/405_error.html").read()
             self.request.sendall(bytearray("HTTP/1.1 405 Method Not Allowed\r\n",'utf-8'))
             self.request.sendall(bytearray("Content-Type: text/html;\r\n",'utf-8'))
-            self.request.sendall(bytearray("Content-Length: %s;"% str(os.path.getsize("www/405_error.html")),'utf-8'))
-            self.request.sendall(bytearray("Connection: closed\r\n",'utf-8'))                
+            self.request.sendall(bytearray("Content-Length: %s\r\n;"% str(os.path.getsize("www/405_error.html")),'utf-8'))
+            self.request.sendall(bytearray("Connection: closed\r\n\r\n",'utf-8'))                
             self.request.sendall(bytearray(file,'utf-8'))
             return
 
@@ -100,15 +99,17 @@ class MyWebServer(socketserver.BaseRequestHandler):
 
         except Exception as ex:
             exception_type = type(ex).__name__
-            if exception_type == "FileNotFoundError":
-                path = "www/404_error.html"
-                file = open(path).read()
-                return False, file, path
-            elif exception_type == "IsADirectoryError":
-                path = "www"+file_path+"index.html"
+            print(exception_type)
+
+            if exception_type == "IsADirectoryError":
+                path = "www"+file_path+"/index.html"
                 file = open(path).read()
                 return True, file, path
 
+            elif exception_type == "FileNotFoundError":
+                path = "www/404_error.html"
+                file = open(path).read()
+                return False, file, path
 if __name__ == "__main__":
     HOST, PORT = "localhost", 8080
 
