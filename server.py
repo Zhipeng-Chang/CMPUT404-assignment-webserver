@@ -1,7 +1,6 @@
 #  coding: utf-8 
 import socketserver
 import os
-from mimetypes import MimeTypes
 # Copyright 2013 Abram Hindle, Eddie Antonio Santos
 # 
 # Licensed under the Apache License, Version 2.0 (the "License");
