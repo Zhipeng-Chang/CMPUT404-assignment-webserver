@@ -44,8 +44,6 @@ from mimetypes import MimeTypes
 # Reference: https://stackoverflow.com/questions/2104080/how-to-check-file-size-in-python?rq=1
 # answered by danben Jan 20 '10 at 18:59, edited by coldspeed Mar 30 '18 at 2:03
 
-#https://stackoverflow.com/questions/43580/how-to-find-the-mime-type-of-a-file-in-python
-
 class MyWebServer(socketserver.BaseRequestHandler):
     
     def handle(self):
@@ -65,15 +63,7 @@ class MyWebServer(socketserver.BaseRequestHandler):
             print("file_path: %s\n"%file_path)
 
             valid_path, file, path = self.valid_path(file_path)
-            valid_file_type = False
-
-            file_type = path.split(".")[1]
-            if file_type == "html" or file_type == "css":
-                valid_file_type = True
-
-            print("file_type: %s\n"%file_type)
-            print("path: %s\n"%path)
-
+            valid_file_type, file_type = self.valid_file_type(path)
 
             if valid_path and valid_file_type:
                 self.request.sendall(bytearray("HTTP/1.1 200 OK\n",'utf-8'))
@@ -107,8 +97,6 @@ class MyWebServer(socketserver.BaseRequestHandler):
 
         except Exception as ex:
             exception_type = type(ex).__name__
-
-            print("exception_type: %s\n"%exception_type)
             if exception_type == "IsADirectoryError":
                 path = "www"+file_path+"/index.html"
                 file = open(path).read()
@@ -118,6 +106,14 @@ class MyWebServer(socketserver.BaseRequestHandler):
                 path = "www/404_error.html"
                 file = open(path).read()
                 return False, file, path
+
+    def valid_file_type(self, file_path):
+        file_type = file_path.split(".")[1]
+        if file_type == "html" or file_type == "css":
+            return True, file_type
+        else:
+            return False, "not_valid"
+
 if __name__ == "__main__":
     HOST, PORT = "localhost", 8080
 
