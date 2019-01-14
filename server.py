@@ -44,6 +44,9 @@ import os
 # Reference: https://stackoverflow.com/questions/2104080/how-to-check-file-size-in-python?rq=1
 # answered by danben Jan 20 '10 at 18:59, edited by coldspeed Mar 30 '18 at 2:03
 
+# Reference: https://stackoverflow.com/questions/28387469/python3-last-character-of-the-string
+# answered by Martijn Pieters♦ Feb 7 '15 at 21:17, edited by Martijn Pieters♦ Feb 7 '15 at 21:31
+
 class MyWebServer(socketserver.BaseRequestHandler):
     
     def handle(self):
@@ -95,12 +98,13 @@ class MyWebServer(socketserver.BaseRequestHandler):
 
         except Exception as ex:
             exception_type = type(ex).__name__
-            if exception_type == "IsADirectoryError":
-                real_path = "www"+file_path+"/index.html"
+            end_character = real_path[-1]
+            if exception_type == "IsADirectoryError" and end_character == "/":
+                real_path = "www"+file_path+"index.html"
                 file = open(real_path).read()
                 return True, file, real_path
 
-            elif exception_type == "FileNotFoundError":
+            else:
                 real_path = "www/404_error.html"
                 file = open(real_path).read()
                 return False, file, real_path
