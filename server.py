@@ -71,23 +71,23 @@ class MyWebServer(socketserver.BaseRequestHandler):
                 print("Content-Length: %s\r\n"% str(os.path.getsize(path)))
                 self.request.sendall(bytearray("HTTP/1.1 200 OK\n",'utf-8'))
                 self.request.sendall(bytearray("Content-Type: text/%s\r\n"% file_type,'utf-8'))
-                self.request.sendall(bytearray("Content-Length: %s\r\n;"% str(os.path.getsize(path)),'utf-8'))
+                self.request.sendall(bytearray("Content-Length: %s;"% str(os.path.getsize(path)),'utf-8'))
                 self.request.sendall(bytearray("Connection: keep-alive\r\n",'utf-8'))
                 self.request.sendall(bytearray(file,'utf-8'))
                 return
                 
             elif not valid_path:
                 self.request.sendall(bytearray("HTTP/1.1 404 Not Found!\r\n",'utf-8'))
-                self.request.sendall(bytearray("Content-Type: text/html\r\n",'utf-8'))
-                self.request.sendall(bytearray("Content-Length: %s\r\n;"% str(os.path.getsize(path)),'utf-8'))
+                self.request.sendall(bytearray("Content-Type: text/html;\r\n",'utf-8'))
+                self.request.sendall(bytearray("Content-Length: %s;"% str(os.path.getsize(path)),'utf-8'))
                 self.request.sendall(bytearray("Connection: closed\r\n",'utf-8'))
                 self.request.sendall(bytearray(file,'utf-8'))
                 return
         else:
             file = open("www/405_error.html").read()
             self.request.sendall(bytearray("HTTP/1.1 405 Method Not Allowed\r\n",'utf-8'))
-            self.request.sendall(bytearray("Content-Type: text/html\r\n",'utf-8'))
-            self.request.sendall(bytearray("Content-Length: %s\r\n"% str(os.path.getsize("www/405_error.html")),'utf-8'))
+            self.request.sendall(bytearray("Content-Type: text/html;\r\n",'utf-8'))
+            self.request.sendall(bytearray("Content-Length: %s;"% str(os.path.getsize("www/405_error.html")),'utf-8'))
             self.request.sendall(bytearray("Connection: closed\r\n",'utf-8'))                
             self.request.sendall(bytearray(file,'utf-8'))
             return
