@@ -78,7 +78,7 @@ class MyWebServer(socketserver.BaseRequestHandler):
                 return
 
             elif real_path == "www/301_error.html":
-                self.request.sendall(bytearray("HTTP/1.1 301 Not Found!\r\n",'utf-8'))
+                self.request.sendall(bytearray("HTTP/1.1 301 Permanently moved\r\n",'utf-8'))
                 self.request.sendall(bytearray("Content-Type: text/html;\r\n",'utf-8'))
                 self.request.sendall(bytearray("Content-Length: %s\r\n;"% str(os.path.getsize(real_path)),'utf-8'))
                 self.request.sendall(bytearray("Connection: closed\r\n\r\n",'utf-8'))
@@ -86,7 +86,7 @@ class MyWebServer(socketserver.BaseRequestHandler):
                 return
 
             else:
-                self.request.sendall(bytearray("HTTP/1.1 404 Not Found!\r\n",'utf-8'))
+                self.request.sendall(bytearray("HTTP/1.1 404 Not Found\r\n",'utf-8'))
                 self.request.sendall(bytearray("Content-Type: text/html;\r\n",'utf-8'))
                 self.request.sendall(bytearray("Content-Length: %s\r\n;"% str(os.path.getsize(real_path)),'utf-8'))
                 self.request.sendall(bytearray("Connection: closed\r\n\r\n",'utf-8'))
