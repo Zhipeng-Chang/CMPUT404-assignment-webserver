@@ -50,7 +50,6 @@ import os
 class MyWebServer(socketserver.BaseRequestHandler):
     
     def handle(self):
-
         self.data = self.request.recv(1024).strip()
         print ("Got a request of: %s\n" % self.data)
         #self.request.sendall(bytearray("OK",'utf-8'))
@@ -67,37 +66,19 @@ class MyWebServer(socketserver.BaseRequestHandler):
             valid_file_type, file_type = self.valid_file_type(real_path)
 
             if valid_path and valid_file_type:
-                self.request.sendall(bytearray("HTTP/1.1 200 OK\n",'utf-8'))
-                self.request.sendall(bytearray("Content-Type: text/%s\r\n"% file_type,'utf-8'))
-                self.request.sendall(bytearray("Content-Length: %s\r\n;"% str(os.path.getsize(real_path)),'utf-8'))
-                self.request.sendall(bytearray("Connection: keep-alive\r\n\r\n",'utf-8'))                
-                self.request.sendall(bytearray(file,'utf-8'))
-                return
+                self.return_status("HTTP/1.1 200 OK\n", file_type, real_path, "keep-alive", file)
 
             elif real_path == "www/301_error.html":
-                self.request.sendall(bytearray("HTTP/1.1 301 Permanently moved\r\n",'utf-8'))
-                self.request.sendall(bytearray("Content-Type: text/html;\r\n",'utf-8'))
-                self.request.sendall(bytearray("Content-Length: %s\r\n;"% str(os.path.getsize(real_path)),'utf-8'))
-                self.request.sendall(bytearray("Connection: closed\r\n\r\n",'utf-8'))
-                self.request.sendall(bytearray(file,'utf-8'))
-                return
+                self.return_status("HTTP/1.1 301 Permanently moved\r\n", "html", real_path, "closed", file)
 
             else:
-                self.request.sendall(bytearray("HTTP/1.1 404 Not Found\r\n",'utf-8'))
-                self.request.sendall(bytearray("Content-Type: text/html;\r\n",'utf-8'))
-                self.request.sendall(bytearray("Content-Length: %s\r\n;"% str(os.path.getsize(real_path)),'utf-8'))
-                self.request.sendall(bytearray("Connection: closed\r\n\r\n",'utf-8'))
-                self.request.sendall(bytearray(file,'utf-8'))
-                return
+                self.return_status("HTTP/1.1 404 Not Found\r\n", "html", real_path, "closed", file)
 
         else:
             file = open("www/405_error.html").read()
-            self.request.sendall(bytearray("HTTP/1.1 405 Method Not Allowed\r\n",'utf-8'))
-            self.request.sendall(bytearray("Content-Type: text/html;\r\n",'utf-8'))
-            self.request.sendall(bytearray("Content-Length: %s\r\n;"% str(os.path.getsize("www/405_error.html")),'utf-8'))
-            self.request.sendall(bytearray("Connection: closed\r\n\r\n",'utf-8'))                
-            self.request.sendall(bytearray(file,'utf-8'))
-            return
+            real_path = "www/405_error.html"
+            self.return_status("HTTP/1.1 405 Method Not Allowed\r\n", "html", real_path, "closed", file)
+
 
     def valid_path(self, file_path):
         try:
@@ -124,6 +105,7 @@ class MyWebServer(socketserver.BaseRequestHandler):
                 file = open(real_path).read()
                 return False, file, real_path
 
+
     def valid_file_type(self, file_path):
         file_type = file_path.split(".")[1]
         if file_type == "html" or file_type == "css":
@@ -132,7 +114,13 @@ class MyWebServer(socketserver.BaseRequestHandler):
             return False, "not_valid"
 
 
-
+    def return_status(self,status, content_type, content_path, connection, content_file):
+        self.request.sendall(bytearray(status,'utf-8'))
+        self.request.sendall(bytearray("Content-Type: text/%s\r\n;"%content_type,'utf-8'))
+        self.request.sendall(bytearray("Content-Length: %s\r\n;"% str(os.path.getsize(content_path)),'utf-8'))
+        self.request.sendall(bytearray("Connection: %s\r\n\r\n"%connection,'utf-8'))                
+        self.request.sendall(bytearray(content_file,'utf-8'))
+        return
 
 if __name__ == "__main__":
     HOST, PORT = "localhost", 8080
