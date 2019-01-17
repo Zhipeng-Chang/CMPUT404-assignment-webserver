@@ -56,7 +56,6 @@ class MyWebServer(socketserver.BaseRequestHandler):
         #self.request.sendall(bytearray("OK",'utf-8'))
         try:
             request_method = self.data.splitlines()[0].decode().split(" ")[0]
-            print ("Request method: %s\n" % request_method)
         except Exception as e:
             request_method = " "
             print ("error: %s\n" % e)
@@ -66,8 +65,6 @@ class MyWebServer(socketserver.BaseRequestHandler):
             file_path = self.data.splitlines()[0].decode().split(" ")[1]
             valid_path, file, real_path = self.valid_path(file_path)
             valid_file_type, file_type = self.valid_file_type(real_path)
-            print("valid_path: %s, file: %s, real_path: %s\n"%(valid_path, file, real_path))
-            print("valid_file_type: %s, file_type: %s"%(valid_file_type, file_type))
 
             if valid_path and valid_file_type:
                 self.request.sendall(bytearray("HTTP/1.1 200 OK\n",'utf-8'))
