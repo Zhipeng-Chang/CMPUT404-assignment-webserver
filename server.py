@@ -66,20 +66,14 @@ class MyWebServer(socketserver.BaseRequestHandler):
             file_path = self.data.splitlines()[0].decode().split(" ")[1]
             valid_path, file, real_path = self.valid_path(file_path)
             valid_file_type, file_type = self.valid_file_type(real_path)
+            print("valid_path: %s, file: %s, real_path: %s\n"%(valid_path, file, real_path))
+            print("valid_file_type: %s, file_type: %s"%(valid_file_type, file_type))
 
             if valid_path and valid_file_type:
                 self.request.sendall(bytearray("HTTP/1.1 200 OK\n",'utf-8'))
                 self.request.sendall(bytearray("Content-Type: text/%s\r\n"% file_type,'utf-8'))
                 self.request.sendall(bytearray("Content-Length: %s\r\n;"% str(os.path.getsize(real_path)),'utf-8'))
                 self.request.sendall(bytearray("Connection: keep-alive\r\n\r\n",'utf-8'))                
-                self.request.sendall(bytearray(file,'utf-8'))
-                return
-                
-            elif real_path == "www/404_error.html":
-                self.request.sendall(bytearray("HTTP/1.1 404 Not Found!\r\n",'utf-8'))
-                self.request.sendall(bytearray("Content-Type: text/html;\r\n",'utf-8'))
-                self.request.sendall(bytearray("Content-Length: %s\r\n;"% str(os.path.getsize(real_path)),'utf-8'))
-                self.request.sendall(bytearray("Connection: closed\r\n\r\n",'utf-8'))
                 self.request.sendall(bytearray(file,'utf-8'))
                 return
 
@@ -90,6 +84,15 @@ class MyWebServer(socketserver.BaseRequestHandler):
                 self.request.sendall(bytearray("Connection: closed\r\n\r\n",'utf-8'))
                 self.request.sendall(bytearray(file,'utf-8'))
                 return
+
+            else:
+                self.request.sendall(bytearray("HTTP/1.1 404 Not Found!\r\n",'utf-8'))
+                self.request.sendall(bytearray("Content-Type: text/html;\r\n",'utf-8'))
+                self.request.sendall(bytearray("Content-Length: %s\r\n;"% str(os.path.getsize(real_path)),'utf-8'))
+                self.request.sendall(bytearray("Connection: closed\r\n\r\n",'utf-8'))
+                self.request.sendall(bytearray(file,'utf-8'))
+                return
+
         else:
             file = open("www/405_error.html").read()
             self.request.sendall(bytearray("HTTP/1.1 405 Method Not Allowed\r\n",'utf-8'))
