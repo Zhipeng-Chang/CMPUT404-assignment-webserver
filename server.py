@@ -50,6 +50,7 @@ import os
 class MyWebServer(socketserver.BaseRequestHandler):
     
     def handle(self):
+
         self.data = self.request.recv(1024).strip()
         print ("Got a request of: %s\n" % self.data)
         #self.request.sendall(bytearray("OK",'utf-8'))
@@ -74,8 +75,16 @@ class MyWebServer(socketserver.BaseRequestHandler):
                 self.request.sendall(bytearray(file,'utf-8'))
                 return
                 
-            else:
+            elif real_path == "www/404_error.html":
                 self.request.sendall(bytearray("HTTP/1.1 404 Not Found!\r\n",'utf-8'))
+                self.request.sendall(bytearray("Content-Type: text/html;\r\n",'utf-8'))
+                self.request.sendall(bytearray("Content-Length: %s\r\n;"% str(os.path.getsize(real_path)),'utf-8'))
+                self.request.sendall(bytearray("Connection: closed\r\n\r\n",'utf-8'))
+                self.request.sendall(bytearray(file,'utf-8'))
+                return
+
+            elif real_path == "www/301_error.html":
+                self.request.sendall(bytearray("HTTP/1.1 301 Not Found!\r\n",'utf-8'))
                 self.request.sendall(bytearray("Content-Type: text/html;\r\n",'utf-8'))
                 self.request.sendall(bytearray("Content-Length: %s\r\n;"% str(os.path.getsize(real_path)),'utf-8'))
                 self.request.sendall(bytearray("Connection: closed\r\n\r\n",'utf-8'))
@@ -99,10 +108,16 @@ class MyWebServer(socketserver.BaseRequestHandler):
         except Exception as ex:
             exception_type = type(ex).__name__
             end_character = real_path[-1]
-            if exception_type == "IsADirectoryError" and end_character == "/":
-                real_path = "www"+file_path+"index.html"
-                file = open(real_path).read()
-                return True, file, real_path
+            if exception_type == "IsADirectoryError":
+                if end_character != "/":
+                    real_path = "www/301_error.html"
+                    file = open(real_path).read()
+                    return False, file, real_path
+
+                elif end_character == "/":
+                    real_path = "www"+file_path+"index.html"
+                    file = open(real_path).read()
+                    return True, file, real_path
 
             else:
                 real_path = "www/404_error.html"
@@ -115,6 +130,9 @@ class MyWebServer(socketserver.BaseRequestHandler):
             return True, file_type
         else:
             return False, "not_valid"
+
+
+
 
 if __name__ == "__main__":
     HOST, PORT = "localhost", 8080
