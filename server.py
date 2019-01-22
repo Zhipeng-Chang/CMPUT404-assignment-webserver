@@ -97,8 +97,14 @@ class MyWebServer(socketserver.BaseRequestHandler):
 
                 elif end_character == "/":
                     real_path = "www"+file_path+"index.html"
-                    file = open(real_path).read()
-                    return True, file, real_path
+                    try:
+                        file = open(real_path).read()
+                        return True, file, real_path
+
+                    except:
+                        real_path = "www/404_error.html"
+                        file = open(real_path).read()
+                        return False, file, real_path
 
             else:
                 real_path = "www/404_error.html"
