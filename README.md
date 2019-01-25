@@ -44,3 +44,6 @@ compatible) http://docs.python.org/2/library/socketserver.html
 
 * Reference: https://stackoverflow.com/questions/28387469/python3-last-character-of-the-string
 * answered by Martijn Pieters♦ Feb 7 '15 at 21:17, edited by Martijn Pieters♦ Feb 7 '15 at 21:31
+
+* Reference: https://stackoverflow.com/questions/4967580/how-to-get-the-size-of-a-string-in-python
+* answered by Igor Bendrup May 16 '16 at 20:06, edited by Max Garner Jun 13 '17 at 0:40

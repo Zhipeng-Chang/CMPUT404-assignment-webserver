@@ -1,6 +1,7 @@
 #  coding: utf-8 
 import socketserver
 import os
+from sys import getsizeof
 # Copyright 2013 Abram Hindle, Eddie Antonio Santos
 # 
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -47,6 +48,8 @@ import os
 # Reference: https://stackoverflow.com/questions/28387469/python3-last-character-of-the-string
 # answered by Martijn Pieters♦ Feb 7 '15 at 21:17, edited by Martijn Pieters♦ Feb 7 '15 at 21:31
 
+# Reference: https://stackoverflow.com/questions/4967580/how-to-get-the-size-of-a-string-in-python
+# answered by Igor Bendrup May 16 '16 at 20:06, edited by Max Garner Jun 13 '17 at 0:40
 class MyWebServer(socketserver.BaseRequestHandler):
     
     def handle(self):
@@ -66,19 +69,19 @@ class MyWebServer(socketserver.BaseRequestHandler):
             valid_file_type, file_type = self.valid_file_type(real_path)
 
             if valid_path and valid_file_type:
-                self.return_status("HTTP/1.1 200 OK\n", file_type, real_path, "keep-alive", file)
+                self.return_status("HTTP/1.1 200 OK\n", file_type, "keep-alive", file)
 
             elif real_path == "www/301_error.html":
 
-                self.return_status("HTTP/1.1 301 Permanently moved\r\n", "html", real_path, "closed", file)
+                self.return_status("HTTP/1.1 301 Permanently moved\r\n", "html", "closed", file)
 
             else:
-                self.return_status("HTTP/1.1 404 Not Found\r\n", "html", real_path, "closed", file)
+                self.return_status("HTTP/1.1 404 Not Found\r\n", "html", "closed", file)
 
         else:
             file = open("www/405_error.html").read()
             real_path = "www/405_error.html"
-            self.return_status("HTTP/1.1 405 Method Not Allowed\r\n", "html", real_path, "closed", file)
+            self.return_status("HTTP/1.1 405 Method Not Allowed\r\n", "html", "closed", file)
 
 
     def valid_path(self, file_path):
@@ -121,10 +124,9 @@ class MyWebServer(socketserver.BaseRequestHandler):
             return False, "not_valid"
 
 
-    def return_status(self,status, content_type, content_path, connection, content_file):
+    def return_status(self,status, content_type, connection, content_file):
         self.request.sendall(bytearray(status,'utf-8'))
         self.request.sendall(bytearray("Content-Type: text/%s;\r\n"%content_type,'utf-8'))
-        self.request.sendall(bytearray("Content-Length: %s\r\n"% str(os.path.getsize(content_path)),'utf-8'))
         self.request.sendall(bytearray("Connection: %s\r\n\r\n"%connection,'utf-8'))                
         self.request.sendall(bytearray(content_file,'utf-8'))
         return
