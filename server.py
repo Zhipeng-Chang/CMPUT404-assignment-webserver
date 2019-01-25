@@ -69,6 +69,7 @@ class MyWebServer(socketserver.BaseRequestHandler):
                 self.return_status("HTTP/1.1 200 OK\n", file_type, real_path, "keep-alive", file)
 
             elif real_path == "www/301_error.html":
+
                 self.return_status("HTTP/1.1 301 Permanently moved\r\n", "html", real_path, "closed", file)
 
             else:
@@ -91,8 +92,8 @@ class MyWebServer(socketserver.BaseRequestHandler):
             end_character = real_path[-1]
             if exception_type == "IsADirectoryError":
                 if end_character != "/":
+                    file = "<!DOCTYPE html> <html><body>HTTP/1.1 301 Moved Permanently<br/> Location: %s/ <br/></body></html>"%file_path
                     real_path = "www/301_error.html"
-                    file = open(real_path).read()
                     return False, file, real_path
 
                 elif end_character == "/":
