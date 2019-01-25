@@ -123,8 +123,8 @@ class MyWebServer(socketserver.BaseRequestHandler):
 
     def return_status(self,status, content_type, content_path, connection, content_file):
         self.request.sendall(bytearray(status,'utf-8'))
-        self.request.sendall(bytearray("Content-Type: text/%s\r\n;"%content_type,'utf-8'))
-        self.request.sendall(bytearray("Content-Length: %s\r\n;"% str(os.path.getsize(content_path)),'utf-8'))
+        self.request.sendall(bytearray("Content-Type: text/%s;\r\n"%content_type,'utf-8'))
+        self.request.sendall(bytearray("Content-Length: %s\r\n"% str(os.path.getsize(content_path)),'utf-8'))
         self.request.sendall(bytearray("Connection: %s\r\n\r\n"%connection,'utf-8'))                
         self.request.sendall(bytearray(content_file,'utf-8'))
         return
